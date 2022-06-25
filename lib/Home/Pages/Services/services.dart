@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:monbang/Home/Pages/Services/mah.dart';
 import 'package:monbang/Home/Pages/Services/translate.dart';
 
 import '../../../Login/components/logo_hero.dart';
@@ -28,13 +29,15 @@ class ServicesPage extends StatelessWidget {
                 },
               ),
               GridContainer(
-                icon: Icons.add,
+                icon: Icons.food_bank,
                 text: Text(
-                  "Өөрийн үйлчилгээг нэмэх",
-                  style: TextStyle(fontSize: 13),
+                  "Мах захиалах",
+                  style: TextStyle(fontSize: 16),
                   textAlign: TextAlign.center,
                 ),
-                onTap: () {},
+                onTap: () {
+                  Get.to(() => MahScreen());
+                },
               ),
             ],
           ),

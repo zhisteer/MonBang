@@ -30,11 +30,14 @@ dependencies:
   cloud_firestore: ^3.1.17
   comment_tree: ^0.3.0
   cupertino_icons: ^1.0.2
+  file_picker: ^4.6.1
   firebase_auth: ^3.3.19
   firebase_core: ^1.17.1
+  firebase_storage: ^10.2.18
   flutter:
     sdk: flutter
   get: ^4.6.5
+  image_picker: ^0.8.5+3
   jiffy: ^5.0.0
 
 dev_dependencies:
