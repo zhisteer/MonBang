@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get/get.dart';
 import 'package:monbang/constants.dart';
 import 'package:monbang/main.dart';
 import '../Home/home_screen.dart';
 import 'components/logo_hero.dart';
 import 'components/utils.dart';
 import 'register_screen.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 import 'components/d_button.dart';
 import 'components/d_field.dart';
@@ -80,9 +83,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   text: "Нэвтрэх",
                   width: 0.2,
                 ),
-                const SizedBox(
-                  height: 10,
-                ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
@@ -98,7 +98,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     SizedBox(
                       width: 10,
                     ),
-                    Text("forgor pass")
+                    Text("Нууц үгээ мартсан уу?")
                   ],
                 )
               ],
@@ -122,15 +122,20 @@ class _LoginScreenState extends State<LoginScreen> {
         await FirebaseAuth.instance.signInWithEmailAndPassword(
             email: emailController, password: passwordController);
       } on FirebaseAuthException catch (e) {
-        print(e);
+        navigatorKey.currentState!.popUntil((route) => route.isFirst);
+        Get.snackbar("Алдаа", "E-mail эсвэл нууц үг буруу байна.",
+            snackPosition: SnackPosition.BOTTOM,
+            duration: Duration(seconds: 2));
+        return;
       }
-      navigatorKey.currentState!.popUntil((route) => route.isFirst);
-      Navigator.pushAndRemoveUntil(
-          context,
-          PageRouteBuilder(
-              transitionDuration: Duration(seconds: 2),
-              pageBuilder: (_, __, ___) => const HomeScreen()),
-          (route) => false);
+      if (FirebaseAuth.instance.currentUser != null) {
+        Navigator.pushAndRemoveUntil(
+            context,
+            PageRouteBuilder(
+                transitionDuration: Duration(seconds: 2),
+                pageBuilder: (_, __, ___) => const HomeScreen()),
+            (route) => false);
+      }
     }
 
     navigatorKey.currentState!.popUntil((route) => route.isFirst);

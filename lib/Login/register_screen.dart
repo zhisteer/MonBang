@@ -121,7 +121,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
             )
             .then((value) => {postDetailsToFirestore()});
       } on FirebaseAuthException catch (e) {
-        print(e);
+        Get.snackbar("Алдаа", e.message.toString(),
+            snackPosition: SnackPosition.BOTTOM,
+            duration: Duration(seconds: 2));
       }
     }
   }

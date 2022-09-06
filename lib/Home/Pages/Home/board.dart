@@ -26,6 +26,7 @@ class _FreeBoardState extends State<FreeBoard> {
   List resultsList = [];
   Users loggedInUser = Users();
   User? user = FirebaseAuth.instance.currentUser;
+  int commentLength = 0;
 
   @override
   void initState() {
@@ -117,6 +118,8 @@ class _FreeBoardState extends State<FreeBoard> {
               style: const TextStyle(color: Colors.white),
               cursorColor: Colors.white,
               decoration: const InputDecoration(
+                  hintText: "Хайх...",
+                  hintStyle: TextStyle(color: Colors.grey),
                   border: InputBorder.none,
                   suffixIcon: Icon(
                     Icons.search,
@@ -154,8 +157,6 @@ class Post extends StatelessWidget {
   String? loggedInUser;
   Post({Key? key, required this.map, required this.loggedInUser})
       : super(key: key);
-  List comments = [];
-  bool gotComments = false;
   String postId = '';
 
   getPostId() async {
@@ -184,7 +185,7 @@ class Post extends StatelessWidget {
           try {
             await getPostId();
           } on FirebaseException catch (e) {
-            print(e);
+            Get.snackbar("Алдаа", e.toString());
           }
 
           Get.back();

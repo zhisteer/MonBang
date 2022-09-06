@@ -29,6 +29,13 @@
             {
               "client_id": "913534974583-o04r3tkiqslfb95g1gkv2o5bnb3bbcht.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "913534974583-bf9269orjcoe5lunbm8f2ot9mlnc58hn.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.monbang"
+              }
             }
           ]
         }

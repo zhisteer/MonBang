@@ -1,6 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:monbang/Home/Pages/Services/Shopping/cart_controller.dart';
+import 'package:monbang/Home/Pages/Services/Shopping/product_model.dart';
 import 'package:monbang/Home/Pages/Services/add_item.dart';
 import 'package:monbang/Home/Pages/Services/basket.dart';
 import 'package:monbang/Home/Pages/Services/column_builder.dart';
@@ -18,6 +21,7 @@ class MahScreen extends StatefulWidget {
 
 class _MahScreenState extends State<MahScreen> {
   FirebaseFirestore _fb = FirebaseFirestore.instance;
+  User? user = FirebaseAuth.instance.currentUser;
   List<dynamic> typeList = [];
   List<String> stringList = [];
   List menuList = [];
@@ -63,14 +67,15 @@ class _MahScreenState extends State<MahScreen> {
       appBar: AppBar(
         backgroundColor: Colors.black,
         actions: [
-          IconButton(
-              onPressed: () {
-                List<dynamic> typeList = [];
-                Get.to(() => AddItem(
-                      typeList: stringList,
-                    ));
-              },
-              icon: Icon(Icons.add))
+          if (user!.email == "mah@gmail.com")
+            IconButton(
+                onPressed: () {
+                  List<dynamic> typeList = [];
+                  Get.to(() => AddItem(
+                        typeList: stringList,
+                      ));
+                },
+                icon: Icon(Icons.add))
         ],
       ),
       body: Column(
@@ -112,7 +117,7 @@ class _MahScreenState extends State<MahScreen> {
         backgroundColor: Colors.black,
         child: Icon(Icons.shopping_basket),
         onPressed: () {
-          Get.to(() => ShoppingCart());
+          Get.to(() => CartProducts());
         },
       ),
     );
@@ -194,20 +199,44 @@ class _MenuState extends State<Menu> {
   }
 }
 
-class MenuItem extends StatelessWidget {
+class MenuItem extends StatefulWidget {
   DocumentSnapshot item;
   MenuItem({Key? key, required this.item}) : super(key: key);
-  TextEditingController amount = TextEditingController();
+
+  @override
+  State<MenuItem> createState() => _MenuItemState();
+}
+
+class _MenuItemState extends State<MenuItem> {
+  User? user = FirebaseAuth.instance.currentUser;
+
+  final cartController = Get.put(CartController());
+  int amount = 1;
+
+  deleteItem() async {
+    await FirebaseFirestore.instance
+        .collection('services')
+        .doc("services")
+        .collection("mah")
+        .doc(widget.item.id)
+        .delete();
+  }
 
   @override
   Widget build(BuildContext context) {
-    int price = int.parse(item['price']);
+    int price = int.parse(widget.item['price']);
+
+    Product product = Product(
+        name: widget.item['name'], price: price, type: widget.item['type']);
     return GestureDetector(
       onTap: () async {
-        String imageURL = await Storage().downloadURL(item['name']);
+        String imageURL = await Storage().downloadURL(widget.item['name']);
         showDialog(
-            context: context,
-            builder: (BuildContext context) => SimpleDialog(
+          context: context,
+          builder: (context) {
+            return StatefulBuilder(
+              builder: (context, setState) {
+                return SimpleDialog(
                   children: [
                     Image.network(
                       imageURL,
@@ -219,7 +248,7 @@ class MenuItem extends StatelessWidget {
                       child: Center(
                           child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [Text(item['name']), Text("₮$price")],
+                        children: [Text(product.name), Text("₮$price")],
                       )),
                     ),
                     Padding(
@@ -229,25 +258,67 @@ class MenuItem extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
                           Text("Ширхэг: "),
-                          Container(width: 50, child: TextField())
+                          Row(
+                            children: [
+                              IconButton(
+                                  onPressed: () {
+                                    if (amount > 1) {
+                                      setState(() {
+                                        amount--;
+                                      });
+                                    }
+                                  },
+                                  icon: Icon(Icons.remove_circle)),
+                              Text("$amount"),
+                              IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      amount++;
+                                    });
+                                  },
+                                  icon: Icon(Icons.add_circle)),
+                            ],
+                          ),
                         ],
                       )),
                     ),
-                    TextButton(
-                      child: Text(
-                        "Сагсанд хийх",
-                        style: TextStyle(color: Colors.black),
-                      ),
-                      onPressed: () {},
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        TextButton(
+                          child: Text(
+                            "Сагсанд хийх",
+                            style: TextStyle(color: Colors.black),
+                          ),
+                          onPressed: () {
+                            cartController.addAmount(product, amount);
+                          },
+                        ),
+                        if (user!.email == "mah@gmail.com")
+                          TextButton(
+                            child: Text(
+                              "Устгах",
+                              style: TextStyle(color: Colors.red),
+                            ),
+                            onPressed: () async {
+                              await deleteItem();
+                              Get.back();
+                            },
+                          ),
+                      ],
                     )
                   ],
-                ));
+                );
+              },
+            );
+          },
+        );
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 3),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [Text(item['name']), Text("₮$price")],
+          children: [Text(widget.item['name']), Text("₮$price")],
         ),
       ),
     );

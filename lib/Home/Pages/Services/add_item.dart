@@ -36,7 +36,7 @@ class _AddItemState extends State<AddItem> {
 
       setState(() => this.image = imageTemporary);
     } on PlatformException catch (e) {
-      print('failed');
+      Get.snackbar("Алдаа", e.toString());
     }
   }
 
@@ -134,7 +134,7 @@ class _AddItemState extends State<AddItem> {
             (value) => print("done"),
           );
     } on FirebaseException catch (e) {
-      print(e);
+      Get.snackbar("Алдаа", e.toString());
     }
     Get.off(() => MahScreen());
   }

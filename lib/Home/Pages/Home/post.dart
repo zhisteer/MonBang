@@ -154,10 +154,12 @@ class _InsidePostState extends State<InsidePost> {
             itemBuilder: ((context) => [
                   const PopupMenuItem(
                     value: 0,
-                    child: Text("Start Chat"),
+                    child: Text("Чат бичих"),
                   ),
                   PopupMenuItem(
-                    child: Text("Report"),
+                    child: widget.myName == user!.email
+                        ? Text("Устгах")
+                        : Text(""),
                     onTap: () {},
                   ),
                 ]),
@@ -173,85 +175,97 @@ class _InsidePostState extends State<InsidePost> {
             ),
           if (postData != null)
             Container(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  Row(
                     children: [
-                      Text(postData['title'],
-                          style: TextStyle(
-                            fontSize: 25,
-                          )),
-                      SizedBox(
-                        height: 20,
-                        child: Text(
-                          "$timeAgo  |  $postBy",
-                          style: TextStyle(
-                              color: Color.fromARGB(255, 122, 122, 122),
-                              fontSize: 12),
-                        ),
-                      ),
-                      SizedBox(
-                          width: size.width - 40,
-                          child: Text(
-                            postData['body'],
-                            style: TextStyle(fontSize: 18),
-                          )),
-                      Row(
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          IconButton(
-                              padding: EdgeInsets.symmetric(vertical: 20),
-                              onPressed: () async {
-                                if (postData['likes'].contains(user!.uid)) {
-                                  removeLikes('likes', user!.uid);
-                                } else if (postData['dislikes']
-                                    .contains(user!.uid)) {
-                                  removeLikes('dislikes', user!.uid);
-                                  updateLikes('likes', user!.uid);
-                                } else {
-                                  updateLikes('likes', user!.uid);
-                                }
-
-                                try {
-                                  await getPostInfo();
-                                } on FirebaseException catch (e) {
-                                  print(e);
-                                }
-
-                                setState(() {});
-                              },
-                              icon: Icon(Icons.thumb_up)),
-                          Text((postData['likes'].length -
-                                  postData['dislikes'].length)
-                              .toString()),
-                          IconButton(
-                              onPressed: () async {
-                                if (postData['dislikes'].contains(user!.uid)) {
-                                  removeLikes('dislikes', user!.uid);
-                                } else if (postData['likes']
-                                    .contains(user!.uid)) {
-                                  removeLikes('likes', user!.uid);
-                                  updateLikes('dislikes', user!.uid);
-                                } else {
-                                  updateLikes('dislikes', user!.uid);
-                                }
-                                try {
-                                  await getPostInfo();
-                                } on FirebaseException catch (e) {
-                                  print(e);
-                                }
-                                setState(() {});
-                              },
-                              icon: Icon(Icons.thumb_down)),
+                          Text(postData['title'],
+                              style: TextStyle(
+                                  fontSize: 25, fontWeight: FontWeight.bold)),
+                          SizedBox(
+                            height: 20,
+                            child: Text(
+                              "$timeAgo  |  $postBy",
+                              style: TextStyle(
+                                  color: Color.fromARGB(255, 122, 122, 122),
+                                  fontSize: 12),
+                            ),
+                          ),
                         ],
                       ),
                     ],
                   ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 20),
+                    child: SizedBox(
+                        width: size.width - 40,
+                        child: Text(
+                          postData['body'],
+                          style: TextStyle(fontSize: 18),
+                        )),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Row(
+                      children: [
+                        GestureDetector(
+                            onTap: () async {
+                              if (postData['likes'].contains(user!.uid)) {
+                                removeLikes('likes', user!.uid);
+                              } else if (postData['dislikes']
+                                  .contains(user!.uid)) {
+                                removeLikes('dislikes', user!.uid);
+                                updateLikes('likes', user!.uid);
+                              } else {
+                                updateLikes('likes', user!.uid);
+                              }
+
+                              try {
+                                await getPostInfo();
+                              } on FirebaseException catch (e) {
+                                print(e);
+                              }
+
+                              setState(() {});
+                            },
+                            child: Icon(Icons.thumb_up)),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Text((postData['likes'].length -
+                                  postData['dislikes'].length)
+                              .toString()),
+                        ),
+                        GestureDetector(
+                            onTap: () async {
+                              if (postData['dislikes'].contains(user!.uid)) {
+                                removeLikes('dislikes', user!.uid);
+                              } else if (postData['likes']
+                                  .contains(user!.uid)) {
+                                removeLikes('likes', user!.uid);
+                                updateLikes('dislikes', user!.uid);
+                              } else {
+                                updateLikes('dislikes', user!.uid);
+                              }
+                              try {
+                                await getPostInfo();
+                              } on FirebaseException catch (e) {
+                                print(e);
+                              }
+                              setState(() {});
+                            },
+                            child: Icon(Icons.thumb_down)),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
-          if (comments.isEmpty) Expanded(child: Text("no comment")),
+          if (comments.isEmpty)
+            Expanded(child: Center(child: Text("Сэтгэгдэл байхгүй байна."))),
           if (comments.isNotEmpty)
             Expanded(
               child: ListView.builder(
@@ -275,13 +289,11 @@ class _InsidePostState extends State<InsidePost> {
                 decoration: InputDecoration(
                     contentPadding:
                         EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                    hintText: "Коммент бичих",
+                    hintText: "Сэтгэгдэл бичих",
                     border: InputBorder.none,
                     suffixIcon: IconButton(
                       icon: Icon(Icons.send),
                       onPressed: () async {
-                        print("hi");
-
                         postComment();
                       },
                     )),

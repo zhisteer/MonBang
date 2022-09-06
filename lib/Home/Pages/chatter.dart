@@ -31,7 +31,6 @@ class _ChattersState extends State<Chatters> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     wait();
   }

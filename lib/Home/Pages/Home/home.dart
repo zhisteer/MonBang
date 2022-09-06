@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:monbang/Home/Pages/Home/board.dart';
+import 'package:monbang/Home/Pages/Home/faq.dart';
 import 'package:monbang/Home/Pages/containers/decorated_container.dart';
 import 'package:monbang/Login/components/d_button.dart';
 import 'package:monbang/Login/components/d_container.dart';
@@ -41,12 +42,12 @@ class HomePage extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => FreeBoard()),
+                    MaterialPageRoute(builder: (context) => FAQ()),
                   );
                 },
               )),
               topLeftText: Text(
-                "F.A.Q",
+                "Түгээмэл Асуултууд",
                 style: TextStyle(fontSize: 18),
               ),
             ),
